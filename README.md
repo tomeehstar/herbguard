@@ -30,7 +30,7 @@ Millions of people use herbal remedies daily — but few know the risks of mixin
 
 ## 🖥️ Live Demo
 
-👉 **[View HerbGuard Live](https://tomeehstar.github.io/herbguard)**
+👉 👉 [View HerbGuard Live](https://tomeehstar.github.io/herbguard)
 
 ---
 
