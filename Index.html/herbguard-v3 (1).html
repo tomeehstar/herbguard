@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HerbGuard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --g900:#0d1a08;
+  --g800:#1a3010;
+  --g700:#264818;
+  --g600:#326020;
+  --g500:#3e7828;
+  --g400:#5a9e3c;
+  --g300:#82c45e;
+  --g200:#b4dA90;
+  --g100:#daefc4;
+  --g50:#f2f9ea;
+
+  --n900:#111410;
+  --n800:#2a2e28;
+  --n600:#4a5048;
+  --n400:#7a8278;
+  --n200:#c4cac2;
+  --n100:#e4e8e2;
+  --n50:#f6f8f5;
+  --white:#ffffff;
+
+  --amber:#c47c14;
+  --amber-bg:#fdf5e4;
+  --amber-border:#f0c060;
+  --red:#b83232;
+  --red-bg:#fdf0f0;
+  --red-border:#e8a0a0;
+  --blue:#2460a8;
+  --blue-bg:#eef4fc;
+
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Manrope',system-ui,sans-serif;
+
+  --radius-sm:6px;
+  --radius-md:10px;
+  --radius-lg:16px;
+  --radius-xl:22px;
+
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:0 12px 32px rgba(0,0,0,0.12),0 4px 8px rgba(0,0,0,0.06);
+}
+
+body{font-family:var(--sans);background:var(--n50);color:var(--n900);min-height:100vh;overflow-x:hidden;font-size:14px;line-height:1.5}
+
+/* ─── UTILITY ─── */
+.hide{display:none!important}
+.screen{display:none;min-height:100vh;animation:fadein .25s ease}
+.screen.active{display:block}
+.screen.flex-screen{display:none}
+.screen.flex-screen.active{display:flex}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* leaf accent — minimal SVG sprig top-right of panels */
+.leaf-sprig{position:absolute;pointer-events:none;opacity:.18}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;cursor:pointer;font-family:var(--sans);font-weight:500;border-radius:var(--radius-md);transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--g600);color:#fff;padding:9px 20px;font-size:13px}
+.btn-primary:hover{background:var(--g700)}
+.btn-ghost{background:transparent;color:var(--n600);border:1px solid var(--n200);padding:8px 16px;font-size:13px}
+.btn-ghost:hover{border-color:var(--n400);color:var(--n800)}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);padding:7px 14px;font-size:12px}
+
+/* ─── PILLS / BADGES ─── */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:100px}
+.pill-green{background:var(--g50);color:var(--g700);border:1px solid var(--g200)}
+.pill-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+.pill-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.pill-blue{background:var(--blue-bg);color:var(--blue);border:1px solid #b8d0f0}
+.pill-gray{background:var(--n100);color:var(--n600);border:1px solid var(--n200)}
+.pill-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* ─── FORM ELEMENTS ─── */
+.field-label{display:block;font-size:11px;font-weight:600;color:var(--n600);margin-bottom:5px;letter-spacing:.03em;text-transform:uppercase}
+.field-input,.field-select,.field-textarea{width:100%;border:1px solid var(--n200);border-radius:var(--radius-md);padding:9px 12px;font-family:var(--sans);font-size:13px;color:var(--n900);background:var(--white);outline:none;transition:border-color .15s,box-shadow .15s}
+.field-input:focus,.field-select:focus,.field-textarea:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(90,158,60,.1)}
+.field-input::placeholder{color:var(--n400)}
+.field-textarea{resize:vertical;min-height:72px}
+.field-select option{background:#fff}
+.form-group{margin-bottom:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-row.three{grid-template-columns:1fr 1fr 1fr}
+.form-full{grid-column:1/-1}
+
+/* ─── CARDS ─── */
+.card{background:var(--white);border:1px solid var(--n100);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+.card-body{padding:22px 24px}
+.card-title{font-family:var(--serif);font-size:17px;font-weight:500;color:var(--n900);margin-bottom:3px}
+.card-sub{font-size:12px;color:var(--n400);margin-bottom:18px}
+.section-eyebrow{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g500);margin-bottom:5px}
+.section-heading{font-family:var(--serif);font-size:22px;color:var(--n900);margin-bottom:4px}
+.section-sub{font-size:13px;color:var(--n400);margin-bottom:22px}
+
+/* ─── DIVIDER ─── */
+.divider{height:1px;background:var(--n100);margin:16px 0}
+
+
+/* ════════════════════════════════════════
+   SCREEN 1 — LOGIN
+════════════════════════════════════════ */
+#s-login{
+  background:var(--g900);
+  align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+
+/* large minimal leaf background art */
+.login-leaf-art{position:absolute;inset:0;pointer-events:none}
+
+.login-wrap{
+  position:relative;z-index:2;
+  display:grid;grid-template-columns:1fr 1fr;
+  width:860px;min-height:540px;
+  background:var(--white);border-radius:var(--radius-xl);
+  overflow:hidden;box-shadow:var(--shadow-lg);
+}
+
+.login-left{
+  background:var(--g800);
+  padding:52px 44px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.login-logo{font-family:var(--serif);font-size:26px;font-weight:500;color:var(--white);letter-spacing:-.02em;margin-bottom:4px}
+.login-logo em{font-style:italic;color:var(--g300)}
+.login-tagline{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.04em}
+.login-left-copy{margin-top:auto}
+.login-left-headline{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--white);line-height:1.3;margin-bottom:10px}
+.login-left-headline em{font-style:italic;color:var(--g300)}
+.login-left-body{font-size:12px;color:rgba(255,255,255,.5);line-height:1.7;max-width:280px}
+.login-left-stats{display:flex;gap:24px;margin-top:28px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1)}
+.lstat-num{font-family:var(--serif);font-size:22px;color:var(--g300);line-height:1}
+.lstat-label{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px}
+
+/* leaf art inside left panel */
+.left-leaf{position:absolute;bottom:-20px;right:-20px;opacity:.08}
+
+.login-right{padding:44px 44px;display:flex;flex-direction:column;justify-content:center}
+.login-right-title{font-family:var(--serif);font-size:22px;color:var(--n900);margin-bottom:4px}
+.login-right-sub{font-size:12px;color:var(--n400);margin-bottom:24px}
+
+.role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px}
+.role-tab{padding:10px 16px;border-radius:var(--radius-md);border:1px solid var(--n200);background:transparent;cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--n600);transition:all .15s;text-align:center}
+.role-tab:hover{border-color:var(--n400)}
+.role-tab.active{background:var(--g600);border-color:var(--g600);color:#fff}
+
+.login-submit{width:100%;padding:11px;background:var(--g700);color:#fff;border:none;border-radius:var(--radius-md);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:6px;letter-spacing:.01em}
+.login-submit:hover{background:var(--g800)}
+.login-hint{font-size:11px;color:var(--n400);text-align:center;margin-top:10px}
+.login-hint span{color:var(--g500);cursor:pointer;text-decoration:underline}
+
+
+/* ════════════════════════════════════════
+   CONSUMER SHELL
+════════════════════════════════════════ */
+#s-consumer{background:var(--n50)}
+.c-shell{display:grid;grid-template-rows:56px 1fr;min-height:100vh}
+
+.c-topbar{
+  background:var(--white);border-bottom:1px solid var(--n100);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;position:sticky;top:0;z-index:40;
+}
+.c-logo{font-family:var(--serif);font-size:18px;font-weight:500;color:var(--g700);letter-spacing:-.02em;cursor:pointer}
+.c-logo em{font-style:italic}
+.c-topbar-right{display:flex;align-items:center;gap:12px}
+.c-user-chip{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--n600)}
+.c-user-dot{width:26px;height:26px;border-radius:50%;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--g700)}
+
+.c-content{max-width:820px;margin:0 auto;padding:36px 24px 60px;width:100%}
+
+/* consumer nav tabs */
+.c-tabs{display:flex;gap:4px;margin-bottom:28px;border-bottom:1px solid var(--n100);padding-bottom:0}
+.c-tab{padding:8px 16px 10px;font-size:12px;font-weight:500;color:var(--n400);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.c-tab:hover{color:var(--n800)}
+.c-tab.active{color:var(--g600);border-bottom-color:var(--g600)}
+
+/* consumer views */
+.c-view{display:none}
+.c-view.active{display:block;animation:fadein .2s ease}
+
+/* ── VERIFY VIEW ── */
+.verify-hero{
+  background:var(--g700);border-radius:var(--radius-xl);
+  padding:32px 36px;margin-bottom:24px;
+  display:flex;align-items:center;justify-content:space-between;
+  overflow:hidden;position:relative;
+}
+.vh-text h2{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--white);line-height:1.25;margin-bottom:6px}
+.vh-text h2 em{font-style:italic;color:var(--g200)}
+.vh-text p{font-size:12px;color:rgba(255,255,255,.55);max-width:340px;line-height:1.6}
+.vh-plant{flex-shrink:0;opacity:.22;margin-right:-8px}
+
+.verify-input-card{padding:22px 24px}
+.nafdac-row{display:flex;gap:10px;margin-bottom:10px}
+.nafdac-big{flex:1;border:1.5px solid var(--n200);border-radius:var(--radius-md);padding:11px 14px;font-family:var(--sans);font-size:14px;color:var(--n900);background:var(--n50);outline:none;transition:all .15s;letter-spacing:.04em}
+.nafdac-big:focus{border-color:var(--g500);background:var(--white);box-shadow:0 0 0 3px rgba(90,158,60,.1)}
+.nafdac-big::placeholder{color:var(--n400);letter-spacing:0;font-size:13px}
+.verify-action{background:var(--g600);color:#fff;border:none;padding:11px 22px;border-radius:var(--radius-md);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:7px}
+.verify-action:hover{background:var(--g700)}
+.verify-action .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.sample-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sample-lbl{font-size:11px;color:var(--n400)}
+.sample-tag{font-size:11px;color:var(--g600);background:var(--g50);border:1px solid var(--g100);padding:2px 9px;border-radius:100px;cursor:pointer;transition:background .15s}
+.sample-tag:hover{background:var(--g100)}
+
+/* result */
+.result-box{margin-top:20px;display:none;animation:fadein .3s ease}
+.result-panel{border-radius:var(--radius-lg);overflow:hidden;border:1px solid}
+.rp-ok{border-color:var(--g200);background:var(--g50)}
+.rp-warn{border-color:var(--amber-border);background:var(--amber-bg)}
+.rp-bad{border-color:var(--red-border);background:var(--red-bg)}
+
+.rp-header{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid}
+.rp-ok .rp-header{border-color:var(--g100)}
+.rp-warn .rp-header{border-color:var(--amber-border)}
+.rp-bad .rp-header{border-color:var(--red-border)}
+.rp-title-row{display:flex;align-items:center;gap:12px}
+.rp-icon{width:40px;height:40px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.rp-ok .rp-icon{background:var(--g100)}
+.rp-warn .rp-icon{background:rgba(196,124,20,.15)}
+.rp-bad .rp-icon{background:rgba(184,50,50,.12)}
+.rp-prod-name{font-family:var(--serif);font-size:16px;color:var(--n900)}
+.rp-mfr{font-size:11px;color:var(--n400)}
+
+.rp-body{padding:18px 22px}
+.rp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.rp-field-label{font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.rp-field-value{font-size:13px;color:var(--n800)}
+.rp-alert-strip{border-radius:var(--radius-md);padding:12px 14px;margin-bottom:12px}
+.rp-ok .rp-alert-strip{display:none}
+.rp-warn .rp-alert-strip{background:rgba(196,124,20,.1);border:1px solid rgba(196,124,20,.25)}
+.rp-bad .rp-alert-strip{background:rgba(184,50,50,.08);border:1px solid rgba(184,50,50,.2)}
+.rp-alert-title{font-size:12px;font-weight:600;margin-bottom:3px}
+.rp-warn .rp-alert-title{color:var(--amber)}
+.rp-bad .rp-alert-title{color:var(--red)}
+.rp-alert-body{font-size:12px;color:var(--n600);line-height:1.55}
+.rp-actions{display:flex;gap:8px}
+
+/* ── SAFETY PROFILE VIEW ── */
+.profile-back{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--n400);cursor:pointer;margin-bottom:22px;background:none;border:none;font-family:var(--sans)}
+.profile-back:hover{color:var(--g600)}
+
+.profile-header{display:flex;align-items:flex-start;gap:18px;margin-bottom:24px}
+.profile-icon{width:64px;height:64px;border-radius:var(--radius-lg);background:var(--g50);border:1px solid var(--g100);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.profile-name{font-family:var(--serif);font-size:22px;color:var(--n900);margin-bottom:3px}
+.profile-meta{font-size:12px;color:var(--n400);margin-bottom:8px}
+.profile-pills{display:flex;gap:6px;flex-wrap:wrap}
+
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.profile-card{padding:18px 20px}
+.pc-title{font-size:10px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.ing-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--n50)}
+.ing-row:last-child{border-bottom:none}
+.ing-name{font-size:13px;color:var(--n800)}
+.ing-amt{font-size:12px;color:var(--n400)}
+.ing-sev{height:3px;border-radius:2px;margin-top:4px}
+.sev-low{background:var(--g400);width:25%}
+.sev-mod{background:var(--amber);width:60%}
+.sev-high{background:var(--red);width:90%}
+
+.int-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--n50)}
+.int-row:last-child{border-bottom:none}
+.int-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.int-name{font-size:13px;color:var(--n800);flex:1}
+.int-sev-label{font-size:11px;font-weight:600}
+.sev-green{color:var(--g500)}
+.sev-amber{color:var(--amber)}
+.sev-red{color:var(--red)}
+
+.dosage-card{padding:18px 20px;margin-bottom:16px}
+.dosage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+.dosage-item-label{font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.dosage-item-value{font-size:13px;color:var(--n800);font-weight:500}
+
+.warn-banner{border-radius:var(--radius-lg);padding:16px 18px;display:flex;gap:12px;background:var(--amber-bg);border:1px solid var(--amber-border)}
+.wb-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.wb-title{font-size:13px;font-weight:600;color:var(--amber);margin-bottom:4px}
+.wb-body{font-size:12px;color:#6b5020;line-height:1.6}
+
+/* ── INTERACTION WARNING VIEW ── */
+.iw-hero{border-radius:var(--radius-xl);padding:26px 28px;margin-bottom:22px;background:var(--amber-bg);border:1.5px solid var(--amber-border);display:flex;gap:16px}
+.iw-icon-wrap{width:52px;height:52px;border-radius:var(--radius-lg);background:rgba(196,124,20,.15);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.iw-title{font-family:var(--serif);font-size:19px;color:var(--n900);margin-bottom:5px}
+.iw-sub{font-size:12px;color:var(--n400);line-height:1.6;max-width:520px}
+.iw-sev-row{display:flex;gap:10px;margin-top:14px}
+.iw-sev-item{background:var(--white);border-radius:var(--radius-md);padding:10px 14px;flex:1}
+.iw-sev-label{font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.iw-sev-value{font-size:13px;font-weight:600;color:var(--n800)}
+
+.steps-card{padding:20px 22px;margin-bottom:16px}
+.step-item{display:flex;gap:14px;margin-bottom:16px;align-items:flex-start}
+.step-item:last-child{margin-bottom:0}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--g50);border:1px solid var(--g200);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--g600);flex-shrink:0;margin-top:1px}
+.step-title{font-size:13px;font-weight:600;color:var(--n800);margin-bottom:3px}
+.step-body{font-size:12px;color:var(--n400);line-height:1.6}
+
+.resource-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.resource-card{padding:14px 16px;cursor:pointer;transition:border-color .15s}
+.resource-card:hover{border-color:var(--g300)}
+.rc-icon{font-size:18px;margin-bottom:6px}
+.rc-title{font-size:13px;font-weight:500;color:var(--n800);margin-bottom:2px}
+.rc-sub{font-size:11px;color:var(--n400)}
+
+/* ── INTERACTION CHECKER (tab) ── */
+.int-checker-card{padding:22px 24px;margin-bottom:16px}
+.int-selects{display:grid;grid-template-columns:1fr 40px 1fr;gap:10px;align-items:end;margin-bottom:14px}
+.plus-circle{width:32px;height:32px;border-radius:50%;background:var(--n50);border:1px solid var(--n200);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--n400);margin-bottom:1px}
+.check-btn{background:var(--n900);color:#fff;border:none;padding:10px 22px;border-radius:var(--radius-md);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:background .15s;width:100%;margin-bottom:14px}
+.check-btn:hover{background:var(--g700)}
+.ai-loading{display:none;align-items:center;gap:10px;padding:12px 0}
+.ai-dots{display:flex;gap:4px}
+.ai-dot{width:5px;height:5px;border-radius:50%;background:var(--g400);animation:bop .55s ease infinite alternate}
+.ai-dot:nth-child(2){animation-delay:.18s}
+.ai-dot:nth-child(3){animation-delay:.36s}
+@keyframes bop{from{opacity:.3;transform:translateY(0)}to{opacity:1;transform:translateY(-4px)}}
+.ai-loading-text{font-size:12px;color:var(--n400)}
+
+.ai-result{display:none;animation:fadein .3s ease}
+.ai-result-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ai-pair{font-family:var(--serif);font-size:16px;color:var(--n900)}
+.ai-sev-pill{}
+.ai-body{font-size:13px;color:var(--n600);line-height:1.65}
+.ai-body strong{color:var(--n800)}
+.ai-disclaimer{font-size:10px;color:var(--n300,#c4cac2);border-top:1px solid var(--n100);padding-top:10px;margin-top:12px;line-height:1.5}
+
+.common-pairs-title{font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.pairs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pair-chip{padding:11px 14px;cursor:pointer;transition:border-color .15s;border-radius:var(--radius-md)}
+.pair-chip:hover{border-color:var(--g300)}
+.pair-herbs{font-size:12px;font-weight:500;color:var(--n800);margin-bottom:2px}
+.pair-sev{font-size:11px}
+
+
+/* ════════════════════════════════════════
+   MANUFACTURER SHELL
+════════════════════════════════════════ */
+#s-manufacturer{background:var(--n50)}
+.m-shell{display:flex;min-height:100vh}
+
+/* sidebar */
+.m-sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--g900);
+  min-height:100vh;position:sticky;top:0;height:100vh;
+  display:flex;flex-direction:column;
+  padding:0;overflow:hidden;
+}
+.m-sidebar-top{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
+.m-sidebar-logo{font-family:var(--serif);font-size:19px;font-weight:500;color:var(--white);letter-spacing:-.02em;margin-bottom:12px}
+.m-sidebar-logo em{font-style:italic;color:var(--g300)}
+.m-company-name{font-size:12px;font-weight:500;color:rgba(255,255,255,.7)}
+.m-company-type{font-size:10px;color:rgba(255,255,255,.3);margin-top:1px}
+
+.m-nav{padding:14px 0;flex:1}
+.m-nav-section{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:0 20px;margin-bottom:4px;margin-top:12px}
+.m-nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:12px;font-weight:400;color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s;border-left:2px solid transparent;position:relative}
+.m-nav-item:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.04)}
+.m-nav-item.active{color:var(--g200);background:rgba(90,158,60,.1);border-left-color:var(--g400)}
+.m-nav-icon{font-size:14px;flex-shrink:0}
+.m-nav-badge{margin-left:auto;background:var(--amber);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px}
+
+.m-sidebar-bottom{padding:16px 20px;border-top:1px solid rgba(255,255,255,.06)}
+.m-signout{background:none;border:none;display:flex;align-items:center;gap:8px;font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.3);cursor:pointer;transition:color .15s;padding:0}
+.m-signout:hover{color:rgba(255,255,255,.6)}
+
+/* main */
+.m-main{flex:1;overflow-y:auto;padding:32px 36px;min-width:0}
+.m-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
+.m-page-title{font-family:var(--serif);font-size:22px;font-weight:500;color:var(--n900);margin-bottom:2px}
+.m-page-sub{font-size:12px;color:var(--n400)}
+.m-view{display:none}
+.m-view.active{display:block;animation:fadein .2s ease}
+
+/* compliance banner */
+.compliance-banner{background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-lg);padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.cb-icon{font-size:18px;flex-shrink:0}
+.cb-text{flex:1}
+.cb-title{font-size:13px;font-weight:600;color:var(--amber);margin-bottom:1px}
+.cb-sub{font-size:11px;color:#8a6020;line-height:1.4}
+.cb-link{font-size:11px;color:var(--g600);cursor:pointer;font-weight:500;white-space:nowrap;flex-shrink:0}
+.cb-link:hover{text-decoration:underline}
+
+/* KPI row */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.kpi-card{padding:18px 20px}
+.kpi-num{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--g600);line-height:1;margin-bottom:3px}
+.kpi-label{font-size:11px;color:var(--n400);margin-bottom:5px}
+.kpi-trend{font-size:10px;font-weight:600}
+.trend-up{color:var(--g500)}
+.trend-warn{color:var(--amber)}
+.trend-neutral{color:var(--n400)}
+
+/* overview grid */
+.overview-grid{display:grid;grid-template-columns:3fr 2fr;gap:16px}
+
+/* product table */
+.pt-wrap{overflow:hidden}
+.pt-head{display:grid;grid-template-columns:2.5fr 1.4fr 1fr 1fr 1fr;gap:12px;padding:10px 16px;background:var(--n50);border-bottom:1px solid var(--n100);font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.05em}
+.pt-row{display:grid;grid-template-columns:2.5fr 1.4fr 1fr 1fr 1fr;gap:12px;padding:12px 16px;border-bottom:1px solid var(--n50);align-items:center;transition:background .12s;cursor:pointer}
+.pt-row:last-child{border-bottom:none}
+.pt-row:hover{background:var(--n50)}
+.pt-prod-name{font-size:13px;color:var(--n800);font-weight:500;margin-bottom:1px}
+.pt-herb-name{font-size:10px;color:var(--n400)}
+.pt-nafdac{font-size:12px;color:var(--n600);font-family:monospace;letter-spacing:.03em}
+.pt-exp{font-size:12px;color:var(--n800)}
+.pt-exp.warn{color:var(--amber);font-weight:500}
+.pt-exp.expired{color:var(--red);font-weight:500}
+.pt-count{font-size:12px;color:var(--g500);font-weight:600}
+
+/* activity feed */
+.activity-feed{}
+.af-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--n50)}
+.af-item:last-child{border-bottom:none}
+.af-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.af-dot-green{background:var(--g400)}
+.af-dot-amber{background:var(--amber)}
+.af-dot-red{background:var(--red)}
+.af-text{font-size:12px;color:var(--n600);line-height:1.4;flex:1}
+.af-time{font-size:10px;color:var(--n300,#c4cac2);flex-shrink:0;margin-top:1px}
+
+/* product detail */
+.pd-header{display:flex;align-items:flex-start;gap:16px;padding:20px 22px;border-bottom:1px solid var(--n100)}
+.pd-icon{width:52px;height:52px;border-radius:var(--radius-lg);background:var(--g50);border:1px solid var(--g100);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.pd-name{font-family:var(--serif);font-size:18px;color:var(--n900);margin-bottom:3px}
+.pd-meta{font-size:11px;color:var(--n400);margin-bottom:6px}
+.pd-body{padding:20px 22px}
+.pd-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.pd-stat-label{font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.pd-stat-value{font-size:14px;font-weight:500;color:var(--n800)}
+.pd-timeline{margin-top:14px}
+.pd-tl-title{font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.pd-tl-item{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start}
+.pd-tl-dot{width:8px;height:8px;border-radius:50%;background:var(--g400);flex-shrink:0;margin-top:3px;border:2px solid var(--g100)}
+.pd-tl-text{font-size:12px;color:var(--n600)}
+.pd-tl-date{font-size:10px;color:var(--n400);margin-top:1px}
+
+/* submit form */
+.submit-wrap{max-width:700px}
+.fs-section{margin-bottom:22px}
+.fs-title{font-family:var(--serif);font-size:16px;color:var(--n800);padding-bottom:10px;border-bottom:1px solid var(--n100);margin-bottom:14px}
+.upload-zone{border:2px dashed var(--n200);border-radius:var(--radius-lg);padding:24px;text-align:center;cursor:pointer;transition:all .15s;background:var(--n50)}
+.upload-zone:hover{border-color:var(--g300);background:var(--g50)}
+.upload-icon{font-size:24px;margin-bottom:6px}
+.upload-label{font-size:13px;color:var(--n600);margin-bottom:2px}
+.upload-sub{font-size:11px;color:var(--n400)}
+.submit-btn{background:var(--g700);color:#fff;border:none;padding:11px 28px;border-radius:var(--radius-md);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.submit-btn:hover{background:var(--g800)}
+
+/* analytics */
+.analytics-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+.chart-card{padding:20px 22px;margin-bottom:16px}
+.chart-title{font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px;padding-bottom:0}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar-val{font-size:10px;color:var(--g500);font-weight:600}
+.bar-fill{width:100%;border-radius:4px 4px 0 0;background:var(--g200);transition:height .3s ease;min-height:3px}
+.bar-fill.current{background:var(--g500)}
+.bar-lbl{font-size:10px;color:var(--n400)}
+.top-prod-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.tp-rank{font-family:var(--serif);font-size:20px;color:var(--n200);font-weight:400;width:22px;flex-shrink:0}
+.tp-wrap{flex:1}
+.tp-name{font-size:12px;color:var(--n800);margin-bottom:5px}
+.tp-bar-bg{height:5px;background:var(--n100);border-radius:3px;overflow:hidden}
+.tp-bar-fg{height:100%;background:var(--g300);border-radius:3px}
+.tp-count{font-size:12px;font-weight:600;color:var(--g500);flex-shrink:0;width:36px;text-align:right}
+
+/* products page full */
+.products-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.products-search{border:1px solid var(--n200);border-radius:var(--radius-md);padding:8px 12px;font-family:var(--sans);font-size:12px;color:var(--n800);background:var(--white);outline:none;width:220px;transition:border-color .15s}
+.products-search:focus{border-color:var(--g400)}
+
+@media(max-width:1100px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .overview-grid{grid-template-columns:1fr}
+}
+@media(max-width:800px){
+  .login-wrap{grid-template-columns:1fr;width:420px}
+  .login-left{display:none}
+  .m-sidebar{width:180px}
+  .m-main{padding:20px}
+  .pt-head,.pt-row{grid-template-columns:2fr 1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 — LOGIN
+══════════════════════════════════════ -->
+<div class="screen flex-screen active" id="s-login">
+  <!-- background leaf art -->
+  <svg class="login-leaf-art" viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <g fill="none" stroke="#5a9e3c" stroke-width="1" opacity=".12">
+      <path d="M-60 700 Q80 500 140 300 Q180 180 200 60"/>
+      <path d="M20 800 Q120 620 170 420 Q210 260 230 100"/>
+      <ellipse cx="120" cy="380" rx="130" ry="52" transform="rotate(-38 120 380)" fill="#3e7828" stroke="none" opacity=".13"/>
+      <ellipse cx="80" cy="300" rx="100" ry="40" transform="rotate(-50 80 300)" fill="#3e7828" stroke="none" opacity=".1"/>
+      <ellipse cx="180" cy="460" rx="120" ry="48" transform="rotate(-25 180 460)" fill="#5a9e3c" stroke="none" opacity=".08"/>
+      <line x1="120" y1="380" x2="210" y2="320" stroke="#82c45e" opacity=".15"/>
+      <line x1="120" y1="380" x2="60" y2="290" stroke="#82c45e" opacity=".12"/>
+      <line x1="120" y1="380" x2="185" y2="455" stroke="#82c45e" opacity=".12"/>
+    </g>
+    <g fill="none" stroke="#5a9e3c" stroke-width="1" opacity=".1">
+      <path d="M1350 800 Q1280 620 1240 440 Q1210 300 1200 140"/>
+      <path d="M1400 750 Q1320 580 1280 400 Q1250 260 1240 110"/>
+      <ellipse cx="1280" cy="420" rx="140" ry="55" transform="rotate(35 1280 420)" fill="#3e7828" stroke="none" opacity=".12"/>
+      <ellipse cx="1330" cy="320" rx="110" ry="44" transform="rotate(22 1330 320)" fill="#5a9e3c" stroke="none" opacity=".09"/>
+      <ellipse cx="1260" cy="520" rx="120" ry="48" transform="rotate(42 1260 520)" fill="#3e7828" stroke="none" opacity=".08"/>
+    </g>
+    <g opacity=".07" fill="#82c45e">
+      <ellipse cx="600" cy="30" rx="70" ry="26" transform="rotate(-8 600 30)"/>
+      <ellipse cx="670" cy="15" rx="55" ry="20" transform="rotate(12 670 15)"/>
+      <ellipse cx="540" cy="50" rx="60" ry="22" transform="rotate(-18 540 50)"/>
+    </g>
+    <g opacity=".07" fill="#82c45e">
+      <ellipse cx="700" cy="870" rx="80" ry="30" transform="rotate(5 700 870)"/>
+      <ellipse cx="780" cy="885" rx="60" ry="22" transform="rotate(-10 780 885)"/>
+    </g>
+  </svg>
+
+  <div class="login-wrap">
+    <!-- left brand panel -->
+    <div class="login-left">
+      <svg class="left-leaf" width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M200 20 Q220 90 180 150 Q150 200 80 210 Q20 220 10 170 Q0 120 40 80 Q80 40 200 20Z" fill="#5a9e3c"/>
+        <path d="M200 20 Q110 110 10 170" stroke="#82c45e" stroke-width="2" fill="none"/>
+        <path d="M165 40 Q100 120 50 170" stroke="#82c45e" stroke-width="1" fill="none" opacity=".5"/>
+        <path d="M130 30 Q90 115 60 165" stroke="#82c45e" stroke-width="1" fill="none" opacity=".4"/>
+        <path d="M180 80 Q130 140 70 185" stroke="#82c45e" stroke-width="1" fill="none" opacity=".35"/>
+      </svg>
+      <div>
+        <div class="login-logo">Herb<em>Guard</em></div>
+        <div class="login-tagline">NAFDAC · Herbal Safety · Nigeria</div>
+      </div>
+      <div class="login-left-copy">
+        <div class="login-left-headline">Verify. Protect.<br><em>Trust the herb.</em></div>
+        <div class="login-left-body">Nigeria's herbal medicine safety platform — connecting consumers, manufacturers, and NAFDAC compliance data in one place.</div>
+        <div class="login-left-stats">
+          <div><div class="lstat-num">4,200+</div><div class="lstat-label">Registered Products</div></div>
+          <div><div class="lstat-num">320</div><div class="lstat-label">Nigerian Herbs</div></div>
+          <div><div class="lstat-num">98%</div><div class="lstat-label">Accuracy Rate</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- right form -->
+    <div class="login-right">
+
+      <!-- sign in / sign up toggle -->
+      <div style="display:flex;gap:0;margin-bottom:22px;border:1px solid var(--n200);border-radius:var(--radius-md);padding:3px;background:var(--n50)">
+        <button id="mode-signin" onclick="setMode('signin')" style="flex:1;padding:7px;border:none;border-radius:7px;font-family:var(--sans);font-size:12px;font-weight:500;cursor:pointer;background:var(--white);color:var(--n800);box-shadow:var(--shadow-sm);transition:all .15s">Sign in</button>
+        <button id="mode-signup" onclick="setMode('signup')" style="flex:1;padding:7px;border:none;border-radius:7px;font-family:var(--sans);font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--n400);transition:all .15s">Create account</button>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <div id="form-signin">
+        <div class="login-right-title" style="margin-bottom:3px">Welcome back</div>
+        <div class="login-right-sub">Sign in to your account</div>
+        <div class="role-tabs" style="margin-top:16px">
+          <button class="role-tab active" id="tab-c" onclick="setRole('consumer')">Consumer</button>
+          <button class="role-tab" id="tab-m" onclick="setRole('manufacturer')">Manufacturer</button>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Email address</label>
+          <input class="field-input" id="l-email" type="email" placeholder="you@example.com">
+        </div>
+        <div class="form-group">
+          <label class="field-label">Password</label>
+          <input class="field-input" id="l-pass" type="password" placeholder="••••••••">
+        </div>
+        <button class="login-submit" onclick="doLogin()">Sign in →</button>
+        <div class="login-hint">Demo mode — <span onclick="doLogin()">skip and enter</span></div>
+        <div class="login-hint" style="margin-top:8px">No account? <span onclick="setMode('signup')">Create one free</span></div>
+      </div>
+
+      <!-- SIGN UP FORM -->
+      <div id="form-signup" style="display:none">
+        <div class="login-right-title" style="margin-bottom:3px">Create your account</div>
+        <div class="login-right-sub">Join HerbGuard — free for consumers</div>
+        <div class="role-tabs" style="margin-top:16px">
+          <button class="role-tab active" id="tab-sc" onclick="setRole('consumer')">Consumer</button>
+          <button class="role-tab" id="tab-sm" onclick="setRole('manufacturer')">Manufacturer</button>
+        </div>
+        <div class="form-row" style="margin-top:4px">
+          <div class="form-group"><label class="field-label">First name</label><input class="field-input" id="su-first" placeholder="Amaka"></div>
+          <div class="form-group"><label class="field-label">Last name</label><input class="field-input" id="su-last" placeholder="Obi"></div>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Email address</label>
+          <input class="field-input" id="su-email" type="email" placeholder="you@example.com">
+        </div>
+        <div id="su-company-wrap" style="display:none">
+          <div class="form-group">
+            <label class="field-label">Company name</label>
+            <input class="field-input" id="su-company" placeholder="e.g. NaturaCure Nigeria Ltd">
+          </div>
+          <div class="form-group">
+            <label class="field-label">CAC Registration No.</label>
+            <input class="field-input" id="su-cac" placeholder="RC-0012345">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Password</label>
+          <input class="field-input" id="su-pass" type="password" placeholder="Min. 8 characters">
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:14px">
+          <input type="checkbox" id="su-terms" style="margin-top:2px;accent-color:var(--g600)">
+          <label for="su-terms" style="font-size:11px;color:var(--n400);line-height:1.5;cursor:pointer">I agree to HerbGuard's <span style="color:var(--g600)">Terms of Use</span> and <span style="color:var(--g600)">Privacy Policy</span></label>
+        </div>
+        <button class="login-submit" onclick="doSignup()">Create account →</button>
+        <div class="login-hint" style="margin-top:10px">Already have an account? <span onclick="setMode('signin')">Sign in</span></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     CONSUMER SCREENS (2, 3, 4)
+══════════════════════════════════════ -->
+<div class="screen" id="s-consumer">
+  <div class="c-shell">
+    <header class="c-topbar">
+      <div class="c-logo">Herb<em>Guard</em></div>
+      <div class="c-topbar-right">
+        <div class="c-user-chip">
+          <div class="c-user-dot" id="c-user-init">A</div>
+          <span id="c-user-name">Amaka</span>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="logout()">Sign out</button>
+      </div>
+    </header>
+
+    <div class="c-content">
+      <div class="c-tabs">
+        <div class="c-tab active" onclick="cTab('verify',this)">Verify Product</div>
+        <div class="c-tab" onclick="cTab('interactions',this)">Interaction Check</div>
+      </div>
+
+      <!-- ── TAB: VERIFY ── -->
+      <div class="c-view active" id="cv-verify">
+
+        <!-- hero -->
+        <div class="verify-hero">
+          <div class="vh-text">
+            <h2>Is your herbal product<br><em>registered and safe?</em></h2>
+            <p>Enter the NAFDAC number from your product label. We'll check its registration status and known herb-drug interactions instantly.</p>
+          </div>
+          <svg class="vh-plant" width="120" height="140" viewBox="0 0 120 140" fill="none">
+            <path d="M60 135 Q58 105 56 82 Q54 58 60 18" stroke="#b4da90" stroke-width="2" fill="none"/>
+            <path d="M56 82 Q18 56 8 28 Q30 26 50 58Z" fill="#82c45e" opacity=".9"/>
+            <path d="M56 82 Q20 58 8 28" stroke="#5a9e3c" stroke-width="1" fill="none"/>
+            <path d="M58 68 Q94 46 112 18 Q90 20 70 52Z" fill="#5a9e3c" opacity=".85"/>
+            <path d="M58 68 Q93 47 112 18" stroke="#3e7828" stroke-width="1" fill="none"/>
+            <path d="M57 98 Q26 86 16 64 Q38 66 54 90Z" fill="#82c45e" opacity=".7"/>
+            <path d="M60 32 Q48 14 44 4 Q56 9 61 30Z" fill="#b4da90" opacity=".8"/>
+            <path d="M60 32 Q70 10 78 4 Q70 11 62 30Z" fill="#82c45e" opacity=".7"/>
+          </svg>
+        </div>
+
+        <!-- verify card -->
+        <div class="card verify-input-card" style="margin-bottom:16px">
+          <div class="card-title">NAFDAC Verification</div>
+          <div class="card-sub">Enter the registration number printed on your product label</div>
+          <div class="nafdac-row">
+            <input class="nafdac-big" id="nafdac-inp" placeholder="e.g. A7-1204L" maxlength="20"
+              onkeydown="if(event.key==='Enter')doVerify()">
+            <button class="verify-action" id="verify-btn" onclick="doVerify()">
+              <div class="spinner" id="v-spinner"></div>
+              Verify
+            </button>
+          </div>
+          <div class="sample-line">
+            <span class="sample-lbl">Try a sample:</span>
+            <span class="sample-tag" onclick="setSample('A7-1204L')">A7-1204L — Approved</span>
+            <span class="sample-tag" onclick="setSample('B3-9921K')">B3-9921K — Warning</span>
+            <span class="sample-tag" onclick="setSample('XX-0000Z')">XX-0000Z — Unregistered</span>
+          </div>
+
+          <!-- RESULT -->
+          <div class="result-box" id="result-box">
+
+            <!-- OK -->
+            <div class="result-panel rp-ok" id="r-ok">
+              <div class="rp-header">
+                <div class="rp-title-row">
+                  <div class="rp-icon">🌿</div>
+                  <div>
+                    <div class="rp-prod-name">Moringa Power Capsules</div>
+                    <div class="rp-mfr">NaturaCure Nigeria Ltd · Lagos State</div>
+                  </div>
+                </div>
+                <span class="pill pill-green"><span class="pill-dot"></span>NAFDAC Approved</span>
+              </div>
+              <div class="rp-body">
+                <div class="rp-grid">
+                  <div><div class="rp-field-label">NAFDAC No.</div><div class="rp-field-value" style="font-family:monospace;letter-spacing:.04em">A7-1204L</div></div>
+                  <div><div class="rp-field-label">Category</div><div class="rp-field-value">Herbal Supplement</div></div>
+                  <div><div class="rp-field-label">Expiry</div><div class="rp-field-value">December 2026</div></div>
+                  <div><div class="rp-field-label">Active Herb</div><div class="rp-field-value">Moringa oleifera</div></div>
+                  <div><div class="rp-field-label">Registered</div><div class="rp-field-value">March 2021</div></div>
+                  <div><div class="rp-field-label">Interactions</div><div class="rp-field-value" style="color:var(--amber);font-weight:500">2 moderate</div></div>
+                </div>
+                <div class="rp-actions">
+                  <button class="btn btn-primary btn-sm" onclick="showProfile()">View Full Safety Profile →</button>
+                  <button class="btn btn-ghost btn-sm" onclick="cTab('interactions',document.querySelectorAll('.c-tab')[1])">Check Interactions</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- WARN -->
+            <div class="result-panel rp-warn" id="r-warn">
+              <div class="rp-header">
+                <div class="rp-title-row">
+                  <div class="rp-icon">🍃</div>
+                  <div>
+                    <div class="rp-prod-name">Bitter Leaf Extract 250mg</div>
+                    <div class="rp-mfr">HerbalPlus Co · Kano State</div>
+                  </div>
+                </div>
+                <span class="pill pill-amber"><span class="pill-dot"></span>Interaction Warning</span>
+              </div>
+              <div class="rp-body">
+                <div class="rp-alert-strip">
+                  <div class="rp-alert-title">⚠ Herb–Drug Interaction Detected</div>
+                  <div class="rp-alert-body">This product contains Vernonia amygdalina (Bitter Leaf) which has moderate interactions with Metformin and antihypertensive drugs. Consult your pharmacist before use if you are on any medication.</div>
+                </div>
+                <div class="rp-grid">
+                  <div><div class="rp-field-label">NAFDAC No.</div><div class="rp-field-value" style="font-family:monospace">B3-9921K</div></div>
+                  <div><div class="rp-field-label">Status</div><div class="rp-field-value">Registered</div></div>
+                  <div><div class="rp-field-label">Expiry</div><div class="rp-field-value">June 2026</div></div>
+                </div>
+                <div class="rp-actions">
+                  <button class="btn btn-primary btn-sm" onclick="showWarning()">View Interaction Details →</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- BAD -->
+            <div class="result-panel rp-bad" id="r-bad">
+              <div class="rp-header">
+                <div class="rp-title-row">
+                  <div class="rp-icon">🚫</div>
+                  <div>
+                    <div class="rp-prod-name">No Registration Found</div>
+                    <div class="rp-mfr">This number does not match any NAFDAC record</div>
+                  </div>
+                </div>
+                <span class="pill pill-red"><span class="pill-dot"></span>Unregistered</span>
+              </div>
+              <div class="rp-body">
+                <div class="rp-alert-strip">
+                  <div class="rp-alert-title">Do not consume this product</div>
+                  <div class="rp-alert-body">No NAFDAC registration found for XX-0000Z. This product may be counterfeit, unregistered, or expired. Report to NAFDAC: 0800-623322 or visit the nearest NAFDAC office.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- end cv-verify -->
+
+      <!-- ── SCREEN 3: SAFETY PROFILE (shown inline) ── -->
+      <div class="c-view" id="cv-profile">
+        <button class="profile-back" onclick="cTab('verify',document.querySelectorAll('.c-tab')[0])">← Back to verification</button>
+        <div class="profile-header">
+          <div class="profile-icon">🌿</div>
+          <div>
+            <div class="profile-name">Moringa Power Capsules</div>
+            <div class="profile-meta">NaturaCure Nigeria Ltd · NAFDAC No: A7-1204L · Registered March 2021</div>
+            <div class="profile-pills">
+              <span class="pill pill-green"><span class="pill-dot"></span>NAFDAC Approved</span>
+              <span class="pill pill-amber">2 Moderate Interactions</span>
+              <span class="pill pill-gray">Expires Dec 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+          <div class="card profile-card">
+            <div class="pc-title">Active Ingredients</div>
+            <div class="ing-row"><div><div class="ing-name">Moringa oleifera leaf</div><div class="ing-sev sev-low"></div></div><div class="ing-amt">400 mg</div></div>
+            <div class="ing-row"><div><div class="ing-name">Moringa seed extract</div><div class="ing-sev sev-low"></div></div><div class="ing-amt">80 mg</div></div>
+            <div class="ing-row"><div><div class="ing-name">Zinc (as oxide)</div><div class="ing-sev sev-low"></div></div><div class="ing-amt">15 mg</div></div>
+            <div class="ing-row"><div><div class="ing-name">Vitamin C</div><div class="ing-sev sev-low"></div></div><div class="ing-amt">50 mg</div></div>
+          </div>
+          <div class="card profile-card">
+            <div class="pc-title">Drug Interactions</div>
+            <div class="int-row"><div class="int-dot" style="background:var(--amber)"></div><div class="int-name">Warfarin</div><div class="int-sev-label sev-amber">Moderate</div></div>
+            <div class="int-row"><div class="int-dot" style="background:var(--amber)"></div><div class="int-name">Levothyroxine</div><div class="int-sev-label sev-amber">Moderate</div></div>
+            <div class="int-row"><div class="int-dot" style="background:var(--g400)"></div><div class="int-name">Metformin</div><div class="int-sev-label sev-green">Low</div></div>
+            <div class="int-row"><div class="int-dot" style="background:var(--g400)"></div><div class="int-name">Paracetamol</div><div class="int-sev-label sev-green">Minimal</div></div>
+          </div>
+        </div>
+
+        <div class="card dosage-card">
+          <div class="pc-title">Dosage & Administration</div>
+          <div class="dosage-grid">
+            <div><div class="dosage-item-label">Adult dose</div><div class="dosage-item-value">1–2 capsules</div></div>
+            <div><div class="dosage-item-label">Frequency</div><div class="dosage-item-value">Twice daily</div></div>
+            <div><div class="dosage-item-label">Duration</div><div class="dosage-item-value">Up to 3 months</div></div>
+            <div><div class="dosage-item-label">Best taken</div><div class="dosage-item-value">With food</div></div>
+            <div><div class="dosage-item-label">Contraindicated</div><div class="dosage-item-value">Pregnancy (1st trim.)</div></div>
+            <div><div class="dosage-item-label">Min. age</div><div class="dosage-item-value">18 years</div></div>
+          </div>
+        </div>
+
+        <div class="warn-banner">
+          <div class="wb-icon">⚠️</div>
+          <div>
+            <div class="wb-title">Monitor if on Warfarin or thyroid medication</div>
+            <div class="wb-body">Moringa may enhance the effect of blood-thinning medications. Inform your pharmacist or doctor if taking Warfarin, Coumadin, or thyroid replacement therapy before starting this supplement.</div>
+          </div>
+        </div>
+      </div><!-- end cv-profile -->
+
+      <!-- ── SCREEN 4: INTERACTION WARNING (shown inline) ── -->
+      <div class="c-view" id="cv-warning">
+        <button class="profile-back" onclick="cTab('verify',document.querySelectorAll('.c-tab')[0])">← Back to verification</button>
+
+        <div class="iw-hero">
+          <div class="iw-icon-wrap">⚠️</div>
+          <div>
+            <div class="iw-title">Bitter Leaf + Antidiabetic Drugs</div>
+            <div class="iw-sub">Vernonia amygdalina contains compounds that lower blood glucose and may amplify the effect of antidiabetic medications like Metformin. This can cause hypoglycaemia if not monitored.</div>
+            <div class="iw-sev-row">
+              <div class="iw-sev-item"><div class="iw-sev-label">Severity</div><div class="iw-sev-value" style="color:var(--amber)">Moderate</div></div>
+              <div class="iw-sev-item"><div class="iw-sev-label">Mechanism</div><div class="iw-sev-value">Pharmacodynamic</div></div>
+              <div class="iw-sev-item"><div class="iw-sev-label">Evidence Level</div><div class="iw-sev-value" style="color:var(--g500)">Level B</div></div>
+              <div class="iw-sev-item"><div class="iw-sev-label">Onset</div><div class="iw-sev-value">Within 2–4 hrs</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card steps-card">
+          <div class="pc-title" style="margin-bottom:14px">What you should do</div>
+          <div class="step-item"><div class="step-num">1</div><div><div class="step-title">Do not stop your medication</div><div class="step-body">Continue taking Metformin as prescribed. Never stop prescription medication without consulting your doctor first.</div></div></div>
+          <div class="step-item"><div class="step-num">2</div><div><div class="step-title">Monitor blood sugar closely</div><div class="step-body">Check glucose levels more frequently if using Bitter Leaf. Watch for signs of hypoglycaemia: dizziness, sweating, confusion, shakiness.</div></div></div>
+          <div class="step-item"><div class="step-num">3</div><div><div class="step-title">Tell your pharmacist or doctor</div><div class="step-body">Disclose all herbal products you are taking. Your doctor may adjust your Metformin dose or suggest safer alternatives.</div></div></div>
+          <div class="step-item"><div class="step-num">4</div><div><div class="step-title">Space out doses if continuing</div><div class="step-body">If advised to continue, take Bitter Leaf at least 2 hours apart from your Metformin dose to reduce the additive effect.</div></div></div>
+        </div>
+
+        <div class="resource-grid">
+          <div class="card resource-card"><div class="rc-icon">📞</div><div class="rc-title">NAFDAC Consumer Helpline</div><div class="rc-sub">0800-NAFDAC · 0800-623322</div></div>
+          <div class="card resource-card"><div class="rc-icon">💊</div><div class="rc-title">Find a Registered Pharmacist</div><div class="rc-sub">Locate accredited pharmacies near you</div></div>
+        </div>
+      </div><!-- end cv-warning -->
+
+      <!-- ── TAB: INTERACTION CHECKER ── -->
+      <div class="c-view" id="cv-interactions">
+        <div class="card int-checker-card">
+          <div class="card-title">Herb–Drug Interaction Checker</div>
+          <div class="card-sub">AI-powered safety analysis for Nigerian herb and drug combinations</div>
+
+          <div class="int-selects">
+            <div>
+              <label class="field-label">Nigerian herb</label>
+              <select class="field-select" id="i-herb">
+                <option value="">Select herb…</option>
+                <option>Moringa oleifera</option>
+                <option>Vernonia amygdalina (Bitter Leaf)</option>
+                <option>Azadirachta indica (Neem)</option>
+                <option>Zingiber officinale (Ginger)</option>
+                <option>Allium sativum (Garlic)</option>
+                <option>Hibiscus sabdariffa (Zobo)</option>
+                <option>Carica papaya (Pawpaw Leaf)</option>
+                <option>Ocimum gratissimum (Scent Leaf)</option>
+              </select>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px">
+              <div class="plus-circle">+</div>
+            </div>
+            <div>
+              <label class="field-label">Conventional drug</label>
+              <select class="field-select" id="i-drug">
+                <option value="">Select drug…</option>
+                <option>Metformin</option>
+                <option>Warfarin</option>
+                <option>Amlodipine</option>
+                <option>Lisinopril</option>
+                <option>Artemether-Lumefantrine</option>
+                <option>Levothyroxine</option>
+                <option>Paracetamol</option>
+                <option>Cotrimoxazole</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="check-btn" onclick="doInteraction()">Check Interaction →</button>
+
+          <div class="ai-loading" id="ai-load">
+            <div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>
+            <span class="ai-loading-text">Analysing interaction…</span>
+          </div>
+
+          <div class="ai-result" id="ai-result">
+            <div class="ai-result-header">
+              <div class="ai-pair" id="ai-pair"></div>
+              <span class="pill" id="ai-sev-pill"></span>
+            </div>
+            <div class="ai-body" id="ai-body"></div>
+            <div class="ai-disclaimer">AI-generated guidance · Not a substitute for clinical advice · Always consult a licensed pharmacist or physician before combining herbal and conventional medicines.</div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:20px 22px">
+          <div class="common-pairs-title">Common combinations to check</div>
+          <div class="pairs-grid">
+            <div class="card pair-chip" onclick="quickCheck('Vernonia amygdalina (Bitter Leaf)','Metformin')">
+              <div class="pair-herbs">Bitter Leaf + Metformin</div>
+              <div class="pair-sev" style="color:var(--amber)">⚠ Moderate risk</div>
+            </div>
+            <div class="card pair-chip" onclick="quickCheck('Allium sativum (Garlic)','Warfarin')">
+              <div class="pair-herbs">Garlic + Warfarin</div>
+              <div class="pair-sev" style="color:var(--red)">⚠ High risk</div>
+            </div>
+            <div class="card pair-chip" onclick="quickCheck('Zingiber officinale (Ginger)','Amlodipine')">
+              <div class="pair-herbs">Ginger + Amlodipine</div>
+              <div class="pair-sev" style="color:var(--amber)">⚠ Moderate risk</div>
+            </div>
+            <div class="card pair-chip" onclick="quickCheck('Moringa oleifera','Levothyroxine')">
+              <div class="pair-herbs">Moringa + Levothyroxine</div>
+              <div class="pair-sev" style="color:var(--amber)">⚠ Moderate risk</div>
+            </div>
+          </div>
+        </div>
+      </div><!-- end cv-interactions -->
+
+    </div><!-- end c-content -->
+  </div><!-- end c-shell -->
+</div><!-- end s-consumer -->
+
+
+<!-- ══════════════════════════════════════
+     MANUFACTURER SCREENS (5–10)
+══════════════════════════════════════ -->
+<div class="screen" id="s-manufacturer">
+  <div class="m-shell">
+    <!-- sidebar -->
+    <aside class="m-sidebar">
+      <div class="m-sidebar-top">
+        <div class="m-sidebar-logo">Herb<em>Guard</em></div>
+        <div class="m-company-name" id="m-company">NaturaCure Nigeria Ltd</div>
+        <div class="m-company-type">Manufacturer Portal</div>
+      </div>
+      <nav class="m-nav">
+        <div class="m-nav-section">Main</div>
+        <div class="m-nav-item active" onclick="mView('overview',this)"><span class="m-nav-icon">▦</span> Overview</div>
+        <div class="m-nav-item" onclick="mView('products',this)"><span class="m-nav-icon">⬡</span> My Products</div>
+        <div class="m-nav-item" onclick="mView('detail',this)"><span class="m-nav-icon">◈</span> Product Detail</div>
+        <div class="m-nav-section">Actions</div>
+        <div class="m-nav-item" onclick="mView('submit',this)"><span class="m-nav-icon">＋</span> Submit Product</div>
+        <div class="m-nav-section">Reporting</div>
+        <div class="m-nav-item" onclick="mView('analytics',this)"><span class="m-nav-icon">↗</span> Analytics</div>
+      </nav>
+      <div class="m-sidebar-bottom">
+        <button class="m-signout" onclick="logout()">← Sign out</button>
+      </div>
+    </aside>
+
+    <!-- main area -->
+    <main class="m-main">
+
+      <!-- ── SCREEN 5: OVERVIEW ── -->
+      <div class="m-view active" id="mv-overview">
+        <div class="m-topbar">
+          <div><div class="m-page-title">Overview</div><div class="m-page-sub">Welcome back, NaturaCure Nigeria Ltd</div></div>
+          <button class="btn btn-primary" onclick="mView('submit',document.querySelectorAll('.m-nav-item')[3])">+ Submit New Product</button>
+        </div>
+
+        <div class="compliance-banner">
+          <span class="cb-icon">⚠️</span>
+          <div class="cb-text">
+            <div class="cb-title">2 products expiring within 90 days</div>
+            <div class="cb-sub">Moringa Power Capsules (Dec 2025) and Neem Soap Extract (Jan 2026) require renewal soon.</div>
+          </div>
+          <span class="cb-link" onclick="mView('products',document.querySelectorAll('.m-nav-item')[1])">View products →</span>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="card kpi-card"><div class="kpi-num">14</div><div class="kpi-label">Registered Products</div><div class="kpi-trend trend-up">↑ 2 this quarter</div></div>
+          <div class="card kpi-card"><div class="kpi-num">3,241</div><div class="kpi-label">Total Verifications</div><div class="kpi-trend trend-up">↑ 18% vs last month</div></div>
+          <div class="card kpi-card"><div class="kpi-num">2</div><div class="kpi-label">Expiring Soon</div><div class="kpi-trend trend-warn">Action required</div></div>
+          <div class="card kpi-card"><div class="kpi-num">1</div><div class="kpi-label">Pending Review</div><div class="kpi-trend trend-neutral">Submitted 3 days ago</div></div>
+        </div>
+
+        <div class="overview-grid">
+          <div class="card">
+            <div class="card-body" style="padding-bottom:8px">
+              <div class="section-eyebrow">Products</div>
+              <div style="font-family:var(--serif);font-size:15px;color:var(--n800);margin-bottom:14px">Recent registrations</div>
+            </div>
+            <div class="pt-wrap">
+              <div class="pt-head"><span>Product</span><span>NAFDAC No.</span><span>Expiry</span><span>Status</span><span>Verif.</span></div>
+              <div class="pt-row" onclick="mView('detail',document.querySelectorAll('.m-nav-item')[2])">
+                <div><div class="pt-prod-name">Moringa Power Capsules</div><div class="pt-herb-name">Moringa oleifera</div></div>
+                <div class="pt-nafdac">A7-1204L</div>
+                <div class="pt-exp warn">Dec 2025</div>
+                <div><span class="pill pill-amber">Expiring</span></div>
+                <div class="pt-count">1,842</div>
+              </div>
+              <div class="pt-row">
+                <div><div class="pt-prod-name">Bitter Leaf Tonic</div><div class="pt-herb-name">Vernonia amygdalina</div></div>
+                <div class="pt-nafdac">A7-3302M</div>
+                <div class="pt-exp">Aug 2026</div>
+                <div><span class="pill pill-green">Active</span></div>
+                <div class="pt-count">742</div>
+              </div>
+              <div class="pt-row">
+                <div><div class="pt-prod-name">Neem Soap Extract</div><div class="pt-herb-name">Azadirachta indica</div></div>
+                <div class="pt-nafdac">A7-8812N</div>
+                <div class="pt-exp warn">Jan 2026</div>
+                <div><span class="pill pill-amber">Expiring</span></div>
+                <div class="pt-count">389</div>
+              </div>
+              <div class="pt-row">
+                <div><div class="pt-prod-name">Ginger-Garlic Syrup</div><div class="pt-herb-name">Z. officinale + A. sativum</div></div>
+                <div class="pt-nafdac">Pending</div>
+                <div class="pt-exp" style="color:var(--n400)">—</div>
+                <div><span class="pill pill-blue">Pending</span></div>
+                <div class="pt-count" style="color:var(--n400)">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <div class="section-eyebrow">Activity</div>
+              <div style="font-family:var(--serif);font-size:15px;color:var(--n800);margin-bottom:14px">Recent events</div>
+              <div class="activity-feed">
+                <div class="af-item"><div class="af-dot af-dot-green"></div><div class="af-text">Moringa Capsules verified by a consumer</div><div class="af-time">2m ago</div></div>
+                <div class="af-item"><div class="af-dot af-dot-green"></div><div class="af-text">Hibiscus Capsules — 4 verifications today</div><div class="af-time">1h ago</div></div>
+                <div class="af-item"><div class="af-dot af-dot-amber"></div><div class="af-text">Neem Extract — expiry reminder sent</div><div class="af-time">3h ago</div></div>
+                <div class="af-item"><div class="af-dot af-dot-green"></div><div class="af-text">Ginger-Garlic Syrup submission received</div><div class="af-time">3d ago</div></div>
+                <div class="af-item"><div class="af-dot af-dot-amber"></div><div class="af-text">Moringa Capsules — renewal due in 90 days</div><div class="af-time">5d ago</div></div>
+                <div class="af-item"><div class="af-dot af-dot-green"></div><div class="af-text">Scent Leaf Oil — 12 verifications this week</div><div class="af-time">1w ago</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SCREEN 6: ALL PRODUCTS ── -->
+      <div class="m-view" id="mv-products">
+        <div class="m-topbar">
+          <div><div class="m-page-title">My Products</div><div class="m-page-sub">All registered and pending products under your account</div></div>
+          <button class="btn btn-primary" onclick="mView('submit',document.querySelectorAll('.m-nav-item')[3])">+ Submit New</button>
+        </div>
+        <div class="products-toolbar">
+          <input class="products-search" placeholder="Search products…">
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm">Filter</button>
+            <button class="btn btn-ghost btn-sm">Export CSV</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="pt-wrap">
+            <div class="pt-head"><span>Product</span><span>NAFDAC No.</span><span>Expiry</span><span>Status</span><span>Verifications</span></div>
+            <div class="pt-row" onclick="mView('detail',document.querySelectorAll('.m-nav-item')[2])">
+              <div><div class="pt-prod-name">Moringa Power Capsules</div><div class="pt-herb-name">Moringa oleifera · 400mg</div></div>
+              <div class="pt-nafdac">A7-1204L</div><div class="pt-exp warn">Dec 2025</div>
+              <div><span class="pill pill-amber">Expiring</span></div><div class="pt-count">1,842</div>
+            </div>
+            <div class="pt-row">
+              <div><div class="pt-prod-name">Bitter Leaf Tonic 250ml</div><div class="pt-herb-name">Vernonia amygdalina</div></div>
+              <div class="pt-nafdac">A7-3302M</div><div class="pt-exp">Aug 2026</div>
+              <div><span class="pill pill-green">Active</span></div><div class="pt-count">742</div>
+            </div>
+            <div class="pt-row">
+              <div><div class="pt-prod-name">Neem Soap Extract 200ml</div><div class="pt-herb-name">Azadirachta indica</div></div>
+              <div class="pt-nafdac">A7-8812N</div><div class="pt-exp warn">Jan 2026</div>
+              <div><span class="pill pill-amber">Expiring</span></div><div class="pt-count">389</div>
+            </div>
+            <div class="pt-row">
+              <div><div class="pt-prod-name">Ginger-Garlic Syrup 100ml</div><div class="pt-herb-name">Z. officinale + A. sativum</div></div>
+              <div class="pt-nafdac" style="color:var(--n400)">Pending</div><div class="pt-exp" style="color:var(--n400)">—</div>
+              <div><span class="pill pill-blue">Pending</span></div><div class="pt-count" style="color:var(--n400)">—</div>
+            </div>
+            <div class="pt-row">
+              <div><div class="pt-prod-name">Hibiscus Capsules 500mg</div><div class="pt-herb-name">Hibiscus sabdariffa</div></div>
+              <div class="pt-nafdac">A7-5510R</div><div class="pt-exp">Oct 2027</div>
+              <div><span class="pill pill-green">Active</span></div><div class="pt-count">268</div>
+            </div>
+            <div class="pt-row">
+              <div><div class="pt-prod-name">Scent Leaf Oil 50ml</div><div class="pt-herb-name">Ocimum gratissimum</div></div>
+              <div class="pt-nafdac">A7-0921S</div><div class="pt-exp">Mar 2027</div>
+              <div><span class="pill pill-green">Active</span></div><div class="pt-count">112</div>
+            </div>
+            <div class="pt-row">
+              <div><div class="pt-prod-name">Zobo Hibiscus Tea 30 bags</div><div class="pt-herb-name">Hibiscus sabdariffa</div></div>
+              <div class="pt-nafdac">A7-7731T</div><div class="pt-exp">Sep 2027</div>
+              <div><span class="pill pill-green">Active</span></div><div class="pt-count">94</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SCREEN 7: PRODUCT DETAIL ── -->
+      <div class="m-view" id="mv-detail">
+        <div class="m-topbar">
+          <div>
+            <button class="profile-back" style="margin-bottom:6px" onclick="mView('products',document.querySelectorAll('.m-nav-item')[1])">← Back to products</button>
+            <div class="m-page-title">Moringa Power Capsules</div>
+            <div class="m-page-sub">NAFDAC No: A7-1204L · NaturaCure Nigeria Ltd</div>
+          </div>
+          <button class="btn btn-danger">Request Renewal</button>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="pd-header">
+            <div class="pd-icon">🌿</div>
+            <div style="flex:1">
+              <div class="pd-name">Moringa Power Capsules</div>
+              <div class="pd-meta">Moringa oleifera (Zogale) · 400mg per capsule · Herbal Supplement · NaturaCure Nigeria Ltd, Lagos</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+                <span class="pill pill-amber"><span class="pill-dot"></span>Expiring Dec 2025</span>
+                <span class="pill pill-green">2 Moderate Interactions</span>
+                <span class="pill pill-gray">GMP Certified</span>
+              </div>
+            </div>
+          </div>
+          <div class="pd-body">
+            <div class="pd-stats">
+              <div><div class="pd-stat-label">Total Verifications</div><div class="pd-stat-value" style="color:var(--g600)">1,842</div></div>
+              <div><div class="pd-stat-label">This Month</div><div class="pd-stat-value" style="color:var(--g600)">284</div></div>
+              <div><div class="pd-stat-label">Registered</div><div class="pd-stat-value">March 2021</div></div>
+              <div><div class="pd-stat-label">Expiry</div><div class="pd-stat-value" style="color:var(--amber)">Dec 2025</div></div>
+            </div>
+            <div class="divider"></div>
+            <div class="pd-timeline">
+              <div class="pd-tl-title">Registration Timeline</div>
+              <div class="pd-tl-item"><div class="pd-tl-dot" style="background:var(--amber);border-color:var(--amber-bg)"></div><div><div class="pd-tl-text">Renewal required — registration expires in 90 days</div><div class="pd-tl-date">Due December 2025</div></div></div>
+              <div class="pd-tl-item"><div class="pd-tl-dot"></div><div><div class="pd-tl-text">Post-market surveillance — no adverse events reported</div><div class="pd-tl-date">Last reviewed June 2025</div></div></div>
+              <div class="pd-tl-item"><div class="pd-tl-dot"></div><div><div class="pd-tl-text">Label update approved — interaction warning added</div><div class="pd-tl-date">February 2024</div></div></div>
+              <div class="pd-tl-item"><div class="pd-tl-dot"></div><div><div class="pd-tl-text">Initial NAFDAC registration approved</div><div class="pd-tl-date">March 2021</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SCREEN 8: SUBMIT PRODUCT ── -->
+      <div class="m-view" id="mv-submit">
+        <div class="m-topbar">
+          <div><div class="m-page-title">Submit New Product</div><div class="m-page-sub">Submit a herbal product for NAFDAC registration — no paper forms required</div></div>
+        </div>
+        <div class="submit-wrap">
+          <div class="fs-section">
+            <div class="fs-title">Product Information</div>
+            <div class="form-row">
+              <div class="form-group"><label class="field-label">Product name</label><input class="field-input" placeholder="e.g. Moringa Power Capsules"></div>
+              <div class="form-group"><label class="field-label">Active herb (Latin name)</label><input class="field-input" placeholder="e.g. Moringa oleifera"></div>
+            </div>
+            <div class="form-row three">
+              <div class="form-group"><label class="field-label">Dosage form</label><select class="field-select"><option>Capsule</option><option>Tablet</option><option>Syrup</option><option>Oil</option><option>Powder</option><option>Tea / Infusion</option><option>Cream / Ointment</option></select></div>
+              <div class="form-group"><label class="field-label">Strength</label><input class="field-input" placeholder="e.g. 400mg"></div>
+              <div class="form-group"><label class="field-label">Pack size</label><input class="field-input" placeholder="e.g. 60 capsules"></div>
+            </div>
+            <div class="form-group form-full"><label class="field-label">Intended use / health claims</label><textarea class="field-textarea" placeholder="Describe the intended therapeutic use of this product…"></textarea></div>
+          </div>
+
+          <div class="fs-section">
+            <div class="fs-title">Manufacturer Details</div>
+            <div class="form-row">
+              <div class="form-group"><label class="field-label">Company name</label><input class="field-input" value="NaturaCure Nigeria Ltd"></div>
+              <div class="form-group"><label class="field-label">Manufacturing state</label><select class="field-select"><option>Lagos</option><option>Abuja FCT</option><option>Kano</option><option>Oyo</option><option>Rivers</option><option>Anambra</option><option>Kaduna</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="field-label">CAC Registration No.</label><input class="field-input" placeholder="RC-0012345"></div>
+              <div class="form-group"><label class="field-label">GMP Certificate No.</label><input class="field-input" placeholder="GMP/NG/2023/001"></div>
+            </div>
+          </div>
+
+          <div class="fs-section">
+            <div class="fs-title">Supporting Documents</div>
+            <div class="form-row">
+              <div class="form-group"><label class="field-label">Certificate of Analysis (CoA)</label><div class="upload-zone"><div class="upload-icon">📄</div><div class="upload-label">Upload PDF</div><div class="upload-sub">Max 10 MB</div></div></div>
+              <div class="form-group"><label class="field-label">Product label / artwork</label><div class="upload-zone"><div class="upload-icon">🖼️</div><div class="upload-label">Upload PNG or PDF</div><div class="upload-sub">Max 10 MB</div></div></div>
+            </div>
+            <div class="form-group"><label class="field-label">Safety Data Sheet</label><div class="upload-zone"><div class="upload-icon">📋</div><div class="upload-label">Upload PDF</div><div class="upload-sub">Max 10 MB</div></div></div>
+          </div>
+
+          <button class="submit-btn" onclick="alert('Submission received. NAFDAC review typically takes 6–8 weeks. You will receive email updates on the status of your application.')">Submit for NAFDAC Review →</button>
+        </div>
+      </div>
+
+      <!-- ── SCREEN 9/10: ANALYTICS ── -->
+      <div class="m-view" id="mv-analytics">
+        <div class="m-topbar">
+          <div><div class="m-page-title">Analytics</div><div class="m-page-sub">Verification and consumer engagement data for your portfolio</div></div>
+        </div>
+
+        <div class="analytics-kpi">
+          <div class="card kpi-card"><div class="kpi-num">3,241</div><div class="kpi-label">Total verifications (all time)</div><div class="kpi-trend trend-up">↑ 18% vs last month</div></div>
+          <div class="card kpi-card"><div class="kpi-num">541</div><div class="kpi-label">Verifications this month</div><div class="kpi-trend trend-up">↑ 76 vs October</div></div>
+          <div class="card kpi-card"><div class="kpi-num">14</div><div class="kpi-label">Active products tracked</div><div class="kpi-trend trend-warn">2 pending renewal</div></div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="chart-title">Monthly Verifications — Last 6 months</div>
+          <div class="bar-chart">
+            <div class="bar-col"><div class="bar-val">312</div><div class="bar-fill" style="height:75px"></div><div class="bar-lbl">Jun</div></div>
+            <div class="bar-col"><div class="bar-val">289</div><div class="bar-fill" style="height:70px"></div><div class="bar-lbl">Jul</div></div>
+            <div class="bar-col"><div class="bar-val">421</div><div class="bar-fill" style="height:102px"></div><div class="bar-lbl">Aug</div></div>
+            <div class="bar-col"><div class="bar-val">398</div><div class="bar-fill" style="height:96px"></div><div class="bar-lbl">Sep</div></div>
+            <div class="bar-col"><div class="bar-val">465</div><div class="bar-fill" style="height:113px"></div><div class="bar-lbl">Oct</div></div>
+            <div class="bar-col"><div class="bar-val" style="color:var(--g600)">541</div><div class="bar-fill current" style="height:120px"></div><div class="bar-lbl" style="color:var(--g600);font-weight:600">Nov</div></div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="chart-title">Top products by verifications</div>
+          <div class="top-prod-row"><div class="tp-rank">1</div><div class="tp-wrap"><div class="tp-name">Moringa Power Capsules</div><div class="tp-bar-bg"><div class="tp-bar-fg" style="width:100%"></div></div></div><div class="tp-count">1,842</div></div>
+          <div class="top-prod-row"><div class="tp-rank">2</div><div class="tp-wrap"><div class="tp-name">Bitter Leaf Tonic</div><div class="tp-bar-bg"><div class="tp-bar-fg" style="width:40%"></div></div></div><div class="tp-count">742</div></div>
+          <div class="top-prod-row"><div class="tp-rank">3</div><div class="tp-wrap"><div class="tp-name">Neem Soap Extract</div><div class="tp-bar-bg"><div class="tp-bar-fg" style="width:21%"></div></div></div><div class="tp-count">389</div></div>
+          <div class="top-prod-row"><div class="tp-rank">4</div><div class="tp-wrap"><div class="tp-name">Hibiscus Capsules</div><div class="tp-bar-bg"><div class="tp-bar-fg" style="width:15%"></div></div></div><div class="tp-count">268</div></div>
+          <div class="top-prod-row"><div class="tp-rank">5</div><div class="tp-wrap"><div class="tp-name">Scent Leaf Oil</div><div class="tp-bar-bg"><div class="tp-bar-fg" style="width:6%"></div></div></div><div class="tp-count">112</div></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div><!-- end s-manufacturer -->
+
+
+<script>
+/* ── STATE ── */
+let role = 'consumer';
+
+/* ── LOGIN MODE (signin / signup) ── */
+function setMode(mode) {
+  const isSignup = mode === 'signup';
+  document.getElementById('form-signin').style.display = isSignup ? 'none' : 'block';
+  document.getElementById('form-signup').style.display = isSignup ? 'block' : 'none';
+  const modeSignin = document.getElementById('mode-signin');
+  const modeSignup = document.getElementById('mode-signup');
+  if (isSignup) {
+    modeSignup.style.background = 'var(--white)'; modeSignup.style.color = 'var(--n800)'; modeSignup.style.boxShadow = 'var(--shadow-sm)';
+    modeSignin.style.background = 'transparent'; modeSignin.style.color = 'var(--n400)'; modeSignin.style.boxShadow = 'none';
+  } else {
+    modeSignin.style.background = 'var(--white)'; modeSignin.style.color = 'var(--n800)'; modeSignin.style.boxShadow = 'var(--shadow-sm)';
+    modeSignup.style.background = 'transparent'; modeSignup.style.color = 'var(--n400)'; modeSignup.style.boxShadow = 'none';
+  }
+}
+
+function doSignup() {
+  const first = (document.getElementById('su-first').value || 'User').trim();
+  const last = (document.getElementById('su-last').value || '').trim();
+  const fullName = (first + ' ' + last).trim();
+  document.getElementById('c-user-name').textContent = first;
+  document.getElementById('c-user-init').textContent = first[0].toUpperCase();
+  if (role === 'manufacturer') {
+    const company = document.getElementById('su-company').value || 'Your Company';
+    document.getElementById('m-company').textContent = company;
+    hide('s-login'); show('s-manufacturer');
+  } else {
+    hide('s-login'); show('s-consumer');
+  }
+}
+
+/* ── LOGIN ── */
+function setRole(r) {
+  role = r;
+  // update both sets of tabs
+  ['tab-c','tab-sc'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', r==='consumer'); });
+  ['tab-m','tab-sm'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', r==='manufacturer'); });
+  // show company fields on signup if manufacturer
+  const wrap = document.getElementById('su-company-wrap');
+  if (wrap) wrap.style.display = r === 'manufacturer' ? 'block' : 'none';
+}
+
+function doLogin() {
+  hide('s-login');
+  if (role === 'manufacturer') {
+    show('s-manufacturer');
+  } else {
+    const email = document.getElementById('l-email').value;
+    const name = email ? email.split('@')[0].split('.').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ') : 'Amaka';
+    document.getElementById('c-user-name').textContent = name;
+    document.getElementById('c-user-init').textContent = name[0].toUpperCase();
+    show('s-consumer');
+  }
+}
+
+function logout() {
+  hide('s-consumer'); hide('s-manufacturer');
+  show('s-login');
+  document.getElementById('l-email').value='';
+  document.getElementById('l-pass').value='';
+}
+
+function show(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('active');
+}
+function hide(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('active');
+}
+
+/* ── CONSUMER TABS / VIEWS ── */
+function cTab(view, el) {
+  document.querySelectorAll('.c-tab').forEach(t=>t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.c-view').forEach(v=>v.classList.remove('active'));
+  const target = document.getElementById('cv-' + view);
+  if (target) target.classList.add('active');
+}
+
+function showProfile() { cTab('profile', null); }
+function showWarning() { cTab('warning', null); }
+
+/* ── VERIFY ── */
+function setSample(v) { document.getElementById('nafdac-inp').value = v; }
+
+function doVerify() {
+  const val = (document.getElementById('nafdac-inp').value||'').trim().toUpperCase();
+  if (!val) return;
+  const btn = document.getElementById('verify-btn');
+  const spin = document.getElementById('v-spinner');
+  btn.disabled = true; spin.style.display = 'block';
+  document.getElementById('result-box').style.display = 'none';
+  ['r-ok','r-warn','r-bad'].forEach(id => document.getElementById(id).style.display='none');
+
+  setTimeout(() => {
+    btn.disabled = false; spin.style.display = 'none';
+    document.getElementById('result-box').style.display = 'block';
+    if (val === 'A7-1204L') document.getElementById('r-ok').style.display = 'block';
+    else if (val === 'B3-9921K') document.getElementById('r-warn').style.display = 'block';
+    else document.getElementById('r-bad').style.display = 'block';
+  }, 700);
+}
+
+/* ── INTERACTION CHECKER ── */
+function quickCheck(herb, drug) {
+  cTab('interactions', document.querySelectorAll('.c-tab')[1]);
+  document.getElementById('i-herb').value = herb;
+  document.getElementById('i-drug').value = drug;
+  setTimeout(doInteraction, 100);
+}
+
+async function doInteraction() {
+  const herb = document.getElementById('i-herb').value;
+  const drug = document.getElementById('i-drug').value;
+  if (!herb || !drug) { alert('Please select both a herb and a drug.'); return; }
+
+  document.getElementById('ai-result').style.display = 'none';
+  document.getElementById('ai-load').style.display = 'flex';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: `You are a clinical pharmacist specialising in Nigerian traditional medicine and herb-drug interactions. Analyse the safety of combining ${herb} with ${drug} for a Nigerian patient context. Reply ONLY with valid compact JSON, no markdown backticks, no extra text: {"severity":"Low","Moderate", or "High","summary":"2 concise sentences on the interaction mechanism and clinical significance","recommendation":"1 practical sentence for the patient","monitor":"brief phrase describing what to watch for"}` }]
+      })
+    });
+    const data = await res.json();
+    let parsed;
+    try { parsed = JSON.parse(data.content[0].text); }
+    catch(e) {
+      const match = data.content[0].text.match(/\{[\s\S]*\}/);
+      parsed = match ? JSON.parse(match[0]) : null;
+    }
+    if (!parsed) throw new Error('parse fail');
+
+    document.getElementById('ai-load').style.display = 'none';
+    document.getElementById('ai-pair').textContent = herb + '  +  ' + drug;
+
+    const sevPill = document.getElementById('ai-sev-pill');
+    const classes = { Low: 'pill pill-green', Moderate: 'pill pill-amber', High: 'pill pill-red' };
+    sevPill.className = classes[parsed.severity] || 'pill pill-amber';
+    sevPill.textContent = (parsed.severity || 'Moderate') + ' Risk';
+
+    document.getElementById('ai-body').innerHTML =
+      `<p style="margin-bottom:8px">${parsed.summary}</p>` +
+      `<p style="margin-bottom:4px"><strong>Advice:</strong> ${parsed.recommendation}</p>` +
+      `<p><strong>Monitor for:</strong> ${parsed.monitor}</p>`;
+
+    document.getElementById('ai-result').style.display = 'block';
+  } catch(e) {
+    document.getElementById('ai-load').style.display = 'none';
+    document.getElementById('ai-pair').textContent = herb + ' + ' + drug;
+    document.getElementById('ai-body').innerHTML = '<span style="color:var(--amber)">Could not load AI analysis. Please check your connection and try again.</span>';
+    document.getElementById('ai-result').style.display = 'block';
+  }
+}
+
+/* ── MANUFACTURER VIEWS ── */
+function mView(id, el) {
+  document.querySelectorAll('.m-view').forEach(v=>v.classList.remove('active'));
+  const target = document.getElementById('mv-' + id);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.m-nav-item').forEach(n=>n.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+/* enter key on NAFDAC input */
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('nafdac-inp');
+  if (inp) inp.addEventListener('keydown', e => { if (e.key==='Enter') doVerify(); });
+});
+</script>
+</body>
+</html>
