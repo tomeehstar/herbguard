@@ -30,7 +30,7 @@ Millions of people use herbal remedies daily — but few know the risks of mixin
 
 ## 🖥️ Live Demo
 
-👉 👉 [View HerbGuard Live](https://github.com/tomeehstar/herbguard.git)
+👉 [View HerbGuard Live](https://tomeehstar.github.io/herbguard/)
 
 ---
 
@@ -43,7 +43,7 @@ No installation needed. Just open the file!
 git clone https://github.com/tomeehstar/herbguard.git
 
 # Open in your browser
-open index.html
+open herbguard.html
 ```
 
 Or simply download the file and open it in any browser.
