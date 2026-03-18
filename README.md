@@ -43,7 +43,7 @@ No installation needed. Just open the file!
 git clone https://github.com/tomeehstar/herbguard.git
 
 # Open in your browser
-open herbguard.html
+open index.html
 ```
 
 Or simply download the file and open it in any browser.
