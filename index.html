@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HerbGuard Nigeria</title>
+<title>HerbGuard</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -250,6 +250,22 @@ body{font-family:var(--sans);background:var(--n50);color:var(--n900);min-height:
 .rp-bad .rp-alert-title{color:var(--red)}
 .rp-alert-body{font-size:12px;color:var(--n600);line-height:1.55}
 .rp-actions{display:flex;gap:8px}
+
+/* ── HERB IMAGE FEATURE ── */
+.herb-image-section{margin-top:18px;border-top:1px solid var(--n100);padding-top:18px}
+.herb-image-label{font-size:10px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.herb-image-wrap{display:flex;gap:16px;align-items:flex-start}
+.herb-img{width:140px;height:140px;object-fit:cover;border-radius:var(--radius-lg);border:1px solid var(--n100);box-shadow:var(--shadow-sm);flex-shrink:0;background:var(--n50)}
+.herb-img-placeholder{width:140px;height:140px;border-radius:var(--radius-lg);border:1px solid var(--n100);background:var(--g50);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;flex-shrink:0}
+.herb-img-placeholder span{font-size:28px}
+.herb-img-placeholder p{font-size:10px;color:var(--n400);text-align:center;padding:0 8px}
+.herb-img-info{flex:1}
+.herb-img-name{font-family:var(--serif);font-size:15px;color:var(--n900);margin-bottom:4px;font-style:italic}
+.herb-img-caption{font-size:12px;color:var(--n400);line-height:1.6;margin-bottom:8px}
+.herb-img-source{font-size:10px;color:var(--n400)}
+.herb-img-source a{color:var(--g500);text-decoration:none}
+.herb-img-loading{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--n400);padding:12px 0}
+.herb-img-spinner{width:14px;height:14px;border:2px solid var(--n200);border-top-color:var(--g500);border-radius:50%;animation:spin .6s linear infinite}
 
 /* ── SAFETY PROFILE VIEW ── */
 .profile-back{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--n400);cursor:pointer;margin-bottom:22px;background:none;border:none;font-family:var(--sans)}
@@ -721,6 +737,20 @@ body{font-family:var(--sans);background:var(--n50);color:var(--n900);min-height:
                   <button class="btn btn-primary btn-sm" onclick="showProfile()">View Full Safety Profile →</button>
                   <button class="btn btn-ghost btn-sm" onclick="cTab('interactions',document.querySelectorAll('.c-tab')[1])">Check Interactions</button>
                 </div>
+                <div class="herb-image-section" id="herb-img-ok">
+                  <div class="herb-image-label">📸 Herb Identification Photo</div>
+                  <div class="herb-img-loading" id="herb-img-ok-loading">
+                    <div class="herb-img-spinner"></div> Fetching herb photo...
+                  </div>
+                  <div class="herb-image-wrap" id="herb-img-ok-content" style="display:none">
+                    <img class="herb-img" id="herb-img-ok-photo" src="" alt="Moringa oleifera">
+                    <div class="herb-img-info">
+                      <div class="herb-img-name">Moringa oleifera</div>
+                      <div class="herb-img-caption">Commonly called the "miracle tree" or "drumstick tree", Moringa oleifera is native to northern India and widely cultivated across Nigeria. The leaves are the primary medicinal part used in supplements.</div>
+                      <div class="herb-img-source">📷 Photo via <a href="https://en.wikipedia.org/wiki/Moringa_oleifera" target="_blank">Wikipedia</a></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -748,6 +778,20 @@ body{font-family:var(--sans);background:var(--n50);color:var(--n900);min-height:
                 </div>
                 <div class="rp-actions">
                   <button class="btn btn-primary btn-sm" onclick="showWarning()">View Interaction Details →</button>
+                </div>
+                <div class="herb-image-section" id="herb-img-warn">
+                  <div class="herb-image-label">📸 Herb Identification Photo</div>
+                  <div class="herb-img-loading" id="herb-img-warn-loading">
+                    <div class="herb-img-spinner"></div> Fetching herb photo...
+                  </div>
+                  <div class="herb-image-wrap" id="herb-img-warn-content" style="display:none">
+                    <img class="herb-img" id="herb-img-warn-photo" src="" alt="Vernonia amygdalina">
+                    <div class="herb-img-info">
+                      <div class="herb-img-name">Vernonia amygdalina</div>
+                      <div class="herb-img-caption">Known as Bitter Leaf or "Ewuro" in Yoruba, "Onugbu" in Igbo, and "Shuwaka" in Hausa. Widely used in Nigerian cooking and traditional medicine for its blood sugar-lowering properties.</div>
+                      <div class="herb-img-source">📷 Photo via <a href="https://en.wikipedia.org/wiki/Vernonia_amygdalina" target="_blank">Wikipedia</a></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1326,6 +1370,32 @@ function cTab(view, el) {
 function showProfile() { cTab('profile', null); }
 function showWarning() { cTab('warning', null); }
 
+/* ── HERB IMAGE FETCHER ── */
+async function fetchHerbImage(herbName, imgId, loadingId, contentId) {
+  try {
+    const res = await fetch(
+      `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(herbName)}&prop=pageimages&format=json&pithumbsize=400&origin=*`
+    );
+    const data = await res.json();
+    const pages = data.query.pages;
+    const page = pages[Object.keys(pages)[0]];
+    document.getElementById(loadingId).style.display = 'none';
+    if (page.thumbnail && page.thumbnail.source) {
+      document.getElementById(imgId).src = page.thumbnail.source;
+      document.getElementById(contentId).style.display = 'flex';
+    } else {
+      document.getElementById(contentId).innerHTML =
+        `<div class="herb-img-placeholder"><span>🌿</span><p>No photo available for this herb</p></div>`;
+      document.getElementById(contentId).style.display = 'flex';
+    }
+  } catch(e) {
+    document.getElementById(loadingId).style.display = 'none';
+    document.getElementById(contentId).innerHTML =
+      `<div class="herb-img-placeholder"><span>🌿</span><p>Could not load herb photo</p></div>`;
+    document.getElementById(contentId).style.display = 'flex';
+  }
+}
+
 /* ── VERIFY ── */
 function setSample(v) { document.getElementById('nafdac-inp').value = v; }
 
@@ -1341,9 +1411,19 @@ function doVerify() {
   setTimeout(() => {
     btn.disabled = false; spin.style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
-    if (val === 'A7-1204L') document.getElementById('r-ok').style.display = 'block';
-    else if (val === 'B3-9921K') document.getElementById('r-warn').style.display = 'block';
-    else document.getElementById('r-bad').style.display = 'block';
+    if (val === 'A7-1204L') {
+      document.getElementById('r-ok').style.display = 'block';
+      document.getElementById('herb-img-ok-loading').style.display = 'flex';
+      document.getElementById('herb-img-ok-content').style.display = 'none';
+      fetchHerbImage('Moringa oleifera', 'herb-img-ok-photo', 'herb-img-ok-loading', 'herb-img-ok-content');
+    } else if (val === 'B3-9921K') {
+      document.getElementById('r-warn').style.display = 'block';
+      document.getElementById('herb-img-warn-loading').style.display = 'flex';
+      document.getElementById('herb-img-warn-content').style.display = 'none';
+      fetchHerbImage('Vernonia amygdalina', 'herb-img-warn-photo', 'herb-img-warn-loading', 'herb-img-warn-content');
+    } else {
+      document.getElementById('r-bad').style.display = 'block';
+    }
   }, 700);
 }
 
